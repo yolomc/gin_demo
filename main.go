@@ -1,21 +1,22 @@
 package main
 
 import (
-	"net/http"
-
-	"github.com/gin-gonic/gin"
+	"github.com/yolomc/gin_demo/dao"
+	"github.com/yolomc/gin_demo/models"
+	"github.com/yolomc/gin_demo/routers"
 )
-
-func helloMsg(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"msg": "Hello World!"})
-}
 
 func main() {
 
-	r := gin.Default()
+	err := dao.InitMySQL() //连接数据库
+	if err != nil {
+		panic(err)
+	}
+	defer dao.Close() //关闭连接
 
-	r.GET("/hello", helloMsg)
+	models.InitModel() // 初始化Model
 
-	r.Run(":9090")
+	r := routers.SetupRouter() //配置路游
 
+	r.Run() //启动服务
 }
